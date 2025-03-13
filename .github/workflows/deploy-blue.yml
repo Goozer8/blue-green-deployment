@@ -56,4 +56,5 @@ jobs:
       - name: Deploy to GKE
         run: |
           kubectl apply -f blue-deployment.yaml
+          kubectl apply -f blue-service.yaml
           kubectl rollout status deployment/blue-deployment
