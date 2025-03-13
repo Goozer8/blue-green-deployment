@@ -59,4 +59,5 @@ jobs:
       - name: Deploy
         run: |
           kubectl apply -f green-deployment.yaml
+	  kubectl apply -f green-service.yaml
           kubectl rollout status deployment green-deployment
