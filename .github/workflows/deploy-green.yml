@@ -1,0 +1,56 @@
+name: Deploy Green to GKE
+
+on:
+  push:
+    branches:
+      - test
+
+env:
+  PROJECT_ID: rock-atlas-451711-a2
+  GKE_CLUSTER: blue-green-cluster
+  GKE_ZONE: us-central1-a
+  IMAGE: green-app
+  IMAGE_TAG: v1
+  GAR_ZONE: us-central1
+  GAR_REPO: blue-green-repo
+
+jobs:
+  build-push-deploy:
+    name: Build, Push, and Deploy Green
+    runs-on: ubuntu-latest
+    environment: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GKE_SA_KEY }}
+
+      - name: Docker Configuration
+        run: |
+          gcloud auth configure-docker $GAR_ZONE-docker.pkg.dev --quiet
+
+      - name: Build
+        run: |
+          docker build \
+            --tag "$GAR_ZONE-docker.pkg.dev/$PROJECT_ID/$GAR_REPO/$IMAGE:$IMAGE_TAG" \
+            .
+
+      - name: Push
+        run: |
+          docker push "$GAR_ZONE-docker.pkg.dev/$PROJECT_ID/$GAR_REPO/$IMAGE:$IMAGE_TAG"
+
+      - name: Set up GKE Credentials
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+
+      - name: Deploy
+        run: |
+          kubectl apply -f green-deployment.yaml
+          kubectl apply -f green-service.yaml
+          kubectl rollout status deployment green-deployment
