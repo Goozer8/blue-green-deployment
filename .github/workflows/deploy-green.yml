@@ -10,7 +10,7 @@ env:
   GKE_CLUSTER: blue-green-cluster
   GKE_ZONE: us-central1-a
   IMAGE: green-app
-  IMAGE_TAG: v1
+  IMAGE_TAG: v2
   GAR_ZONE: us-central1
   GAR_REPO: blue-green-repo
 
