@@ -19,6 +19,6 @@ spec:
     spec:
       containers:
       - name: webapp
-        image: us-central1-docker.pkg.dev/rock-atlas-451711-a2/blue-green-repo/green-app:v1
+        image: us-central1-docker.pkg.dev/rock-atlas-451711-a2/blue-green-repo/green-app:v2
         ports:
         - containerPort: 80
